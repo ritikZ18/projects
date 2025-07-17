@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:900" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <title>Document</title>
+  <title>TENDERAN</title>
 </head>
 <body>
   <div class="main-content">
+    
     <div class="concept concept-one">
       <div class="hover hover-1"></div>
       <div class="hover hover-2"></div>
@@ -21,6 +22,7 @@
       <div class="hover hover-9"></div>
       <h1>Desert</h1>
     </div>
+
     <div class="concept concept-two">
       <div class="hover">
         <h1>F</h1>
@@ -87,7 +89,7 @@
       </h1>
     </div>
     <div class="concept concept-seven">
-      <h1>fries</h1>
+      <h1>Fries</h1>
     </div>
     <div class="concept concept-eight">
       <h1 class="word">
@@ -98,9 +100,42 @@
         <div class="char" data-content="S">S</div>
       </h1>
     </div>
+
+
+    <div class="nav-buttons">
+  <button id="prevBtn">⬅</button>
+  <button id="nextBtn">➡</button>
+    </div> 
+
   </div>
   <!-- <footer><a href="https://twitter.com/meowlivia_" target="_blank"><i class="icon-social-twitter icons"></i></a><a href="https://github.com/oliviale" target="_blank"><i class="icon-social-github icons"></i></a><a href="https://dribbble.com/oliviale" target="_blank"><i class="icon-social-dribbble icons"></i></a></footer> -->
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ <script>
+  const concepts = document.querySelectorAll('.concept');
+  let currentIndex = 0;
+
+  function showConcept(index) {
+    concepts.forEach((el, i) => {
+      el.classList.remove('active');
+    });
+    concepts[index].classList.add('active');
+  }
+
+  document.getElementById('prevBtn').onclick = () => {
+    currentIndex = (currentIndex - 1 + concepts.length) % concepts.length;
+    showConcept(currentIndex);
+  };
+
+  document.getElementById('nextBtn').onclick = () => {
+    currentIndex = (currentIndex + 1) % concepts.length;
+    showConcept(currentIndex);
+  };
+
+  // On page load
+  showConcept(currentIndex);
+</script>
+
+
 </body>
 </html>
