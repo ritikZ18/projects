@@ -58,6 +58,8 @@ function createScene() {
 	renderer.setSize (WIDTH, HEIGHT);
 	//enable shadow rendering
 	renderer.shadowMap.enabled = true;
+	renderer.physicallyCorrectLights = true;
+
 
 	// Add the Renderer to the DOM, in the world div.
 	container = document.getElementById('world');
@@ -742,6 +744,10 @@ function loop(){
   sky.mesh.rotation.z += .003;
   forest.mesh.rotation.z += .005;
   updatePlane();
+   updateBarrelRoll();
+   updateBombs();
+   updateExplosions();
+   
   
     var amplitude = 500;
   var frequency = 0.0001; // Adjust this value to slow down the animation
@@ -771,6 +777,120 @@ function handleMouseMove (event) {
 }
 
 
+// Barrel Roll Animation
+
+let barrelRolling = false 
+let rollProgress = 0
+
+document.addEventListener('keydown', function(_event) {
+	if(_event.code === 'Space' && !barrelRolling) {
+		barrelRolling = true;
+		rollProgress = 0;
+	}
+});
+
+
+function updateBarrelRoll(){
+	if(barrelRolling){
+		rollProgress += 0.2
+		airplane.mesh.rotation.z += 0.2;
+
+		if(rollProgress >= Math.PI*2) {
+			barrelRolling = false;
+			airplane.mesh.rotation.z = 0; // Reset rotation after the roll
+			
+		}
+
+	}
+
+	
+}
+
+
+// Bomb Aninmation with Effects 
+
+// Global bombs array
+const bombs = [];
+
+function dropBomb() {
+  const geometry = new THREE.SphereGeometry(5, 8, 8);
+  const material = new THREE.MeshBasicMaterial({ color: Colors.red });
+  const bomb = new THREE.Mesh(geometry, material);
+  bomb.position.copy(airplane.mesh.position);
+  bomb.userData = { speed: 0 }; // attach speed to bomb
+  scene.add(bomb);
+  bombs.push(bomb); // add to array
+}
+
+function updateBombs() {
+  for (let i = bombs.length - 1; i >= 0; i--) {
+    const bomb = bombs[i];
+    bomb.userData.speed += 0.5;
+    bomb.position.y -= bomb.userData.speed;
+
+    if (bomb.position.y < -100) {
+		createExplosion(bomb.position.clone());
+      scene.remove(bomb);
+      bombs.splice(i, 1); // remove from array
+    }
+  }
+}
+
+// Key listener
+document.addEventListener("keydown", (e) => {
+  if (e.code === "KeyB") dropBomb();
+});
+
+
+// BOMBS EXPLODE EFFECTS
+
+const explosions = [];
+
+function createExplosion(position) {
+	  console.log("💥 Explosion triggered at", position);
+  const geometry = new THREE.SphereGeometry(10, 16, 16);
+  const material = new THREE.MeshStandardMaterial({ 
+    color: 0xffaa00,
+    transparent: true,
+    opacity: 1
+  });
+
+  const explosion = new THREE.Mesh(geometry, material);
+  position.y += 30; // move it above the land
+  explosion.position.copy(position);
+  scene.add(explosion);
+
+  // Track explosion animation state
+  explosions.push({
+    mesh: explosion,
+    scale: 1,
+    opacity: 1
+  });
+
+
+
+}
+
+function updateExplosions() {
+  for (let i = explosions.length - 1; i >= 0; i--) {
+    const exp = explosions[i];
+    exp.scale += 0.2;
+    exp.opacity -= 0.05;
+
+    exp.mesh.scale.set(exp.scale, exp.scale, exp.scale);
+    exp.mesh.material.opacity = exp.opacity;
+
+    if (exp.opacity <= 0) {
+      scene.remove(exp.mesh);
+      explosions.splice(i, 1);
+    }
+  }
+}
+
+
+
+
+
 function init(event) {
 	createScene();
 	createLights();
@@ -785,6 +905,9 @@ function init(event) {
 	document.addEventListener('mousemove', handleMouseMove, false);
 
 	loop();
+	// updateBarrelRoll();
+	// dropBomb();
+	// renderer.render(scene, camera);
 }
 
 window.addEventListener('load', init, false);
