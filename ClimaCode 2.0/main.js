@@ -89,7 +89,76 @@ function changeTemp(element, newTemp) {
 }
 
 
+// LIVE TEMPERATURE OF USER REGION
+function getweather(lat, lon) {
+  const apiKey = '8c1066b6f53349a696c220353251707'; // Your WeatherAPI key
+  const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const tempC = Math.round(data.current.temp_c);
+      const condition = data.current.condition.text.toLowerCase(); // e.g., "partly cloudy"
+      const city = data.location.name;
+
+      console.log("City:", city, "Temp:", tempC, "Condition:", condition);
+      initializeWeatherUI(tempC, condition, city);
+    })
+    .catch(err => console.error('Weather fetch error:', err));
+}
+
+
+function initializeWeatherUI(tempF, condition, cityName) {
+  console.log("City:", cityName, "Temp:", tempF);
+  const tempElement = document.querySelector('.temp');
+  const mountains = document.querySelector('#mountains');
+  const outerRim = document.querySelector('.outer-rim');
+
+  changeTemp(tempElement, tempF); // animate
+  outerRim.classList.add('power-on');
+  mountains.classList.remove("clouds", "snow", "moon", "sunset", "storm");
+
+  if (condition.includes("snow")) {
+    mountains.classList.add("snow");
+  } else if (condition.includes("cloud")) {
+    mountains.classList.add("clouds");
+  } else if (condition.includes("rain") || condition.includes("storm")) {
+    mountains.classList.add("storm");
+  } else if (condition.includes("clear") && new Date().getHours() > 18) {
+    mountains.classList.add("moon");
+  } else if (condition.includes("clear")) {
+    // sunny default
+  } else {
+    mountains.classList.add("clouds"); // fallback
+  }
+
+    document.getElementById('user-location').textContent = cityName;
+  document.getElementById('user-temp').textContent = `${tempF}°C`;
+
+
+  currentTempF = tempF; // Update the global variable
+}
+
+
+
+
 window.onload = function() {
+
+  fetch('https://ipapi.co/json/')
+  .then(response => response.json())
+  .then(location => { 
+    const lat = location.latitude;
+    const lon = location.longitude;
+    console.log("User location:", lat, lon);
+    getweather(lat, lon);
+  })
+  .catch(err => {
+    console.error('Error fetching location:', err);
+    // Fallback to a default location if needed
+  })
+
+
+
   const sixths = Array.from(document.querySelectorAll('.sixths'));
   let index = 0;
   let temp = document.querySelector('.temp');

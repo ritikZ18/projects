@@ -905,3 +905,48 @@ g#biplane {
         translate: -95%;
     }
 }
+
+
+
+.location-box {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: #ecf0f1;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+  max-width: 260px;
+  width: 90%;
+  transition: all 0.3s ease;
+}
+
+.location-box p {
+  margin: 0.4em 0;
+  font-weight: 400;
+  word-break: break-word;
+}
+
+.location-box strong {
+  color: #f1c40f;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .location-box {
+    bottom: 1rem;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    font-size: 0.9rem;
+  }
+}
