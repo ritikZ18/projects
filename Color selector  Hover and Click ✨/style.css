@@ -1,0 +1,55 @@
+/* author: Camille
+https://codepen.io/camillefite/pen/OJapdVq */
+@import url("https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;400;800&display=swap");
+
+html,
+body,
+canvas {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+canvas {
+    cursor: crosshair;
+}
+h1,
+h2 {
+    font-family: "Martian Mono", monospace;
+    font-weight: 100;
+}
+
+#hex {
+    position: absolute;
+    left: 0;
+    top: -100vh;
+    color: white;
+}
+
+div#copied {
+    font-size: 50%;
+    width: 100vw;
+    height: 3px;
+    background: white;
+    color: white;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.appear {
+    animation: swipe 3s forwards;
+}
+
+@keyframes swipe {
+    from {
+        height: 0;
+    }
+    70% {
+        height: 30vh;
+    }
+    to {
+        height: 3px;
+    }
+}
