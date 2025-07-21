@@ -990,10 +990,103 @@ class FullScreen3DExample {
 }
 
 function main() {
-    const root = document.getElementById('root');
-    const example = new FullScreen3DExample(root);
+  const root = document.getElementById('root');
+  const example = new FullScreen3DExample(root);
+  example.start();
 
-    example.start();
+  window.addEventListener('load', () => {
+    const audio = document.getElementById('bg-music');
+    const controls = document.getElementById('controls');
+    const playPauseBtn = document.getElementById('playPause');
+    const randomizeBtn = document.getElementById('randomize');
+    const playPauseIcon = playPauseBtn.querySelector('i');
+    const randomIcon = randomizeBtn.querySelector('i');
+
+    // Load FontAwesome
+    const faLink = document.getElementById('fa-icons');
+    faLink.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
+    faLink.disabled = false;
+
+    // Playlist
+    const playlist = [
+      'assets/song1.mp3'
+    ];
+
+    let currentTrack = 0;
+    let isPlaying = false;
+
+    function updateTrackInfo(index) {
+      const trackInfo = document.getElementById('track-info');
+      if (trackInfo) {
+        const name = playlist[index].split('/').pop().replace('.mp3', '');
+        trackInfo.textContent = `Now Playing: ${name}`;
+      }
+    }
+
+    function fadeInAudio(duration = 2000) {
+  const step = 0.01;
+  const interval = duration / (1 / step);
+  audio.volume = 0;
+
+  const fade = setInterval(() => {
+    if (audio.volume < 1.0) {
+      audio.volume = Math.min(1.0, audio.volume + step);
+    } else {
+      clearInterval(fade);
+    }
+  }, interval);
+}
+
+
+    function playTrack(index) {
+      if (index >= playlist.length) index = 0;
+      currentTrack = index;
+      audio.src = playlist[currentTrack];
+      audio.volume = 0; 
+      audio.play();
+      fadeInAudio();
+      playPauseIcon.className = "fa fa-pause";
+      playPauseBtn.title = "Pause Music";
+      isPlaying = true;
+      playPauseBtn.classList.add("playing");
+      updateTrackInfo(currentTrack);
+    }
+
+    audio.addEventListener('ended', () => {
+      playTrack(currentTrack + 1);
+    });
+
+    playPauseBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        if (!audio.src) {
+          playTrack(currentTrack);
+        } else {
+          audio.play();
+          fadeInAudio();
+          playPauseIcon.className = "fa fa-pause";
+          playPauseBtn.title = "Pause Music";
+          isPlaying = true;
+          playPauseBtn.classList.add("playing");
+        }
+      } else {
+        audio.pause();
+        playPauseIcon.className = "fa fa-play";
+        playPauseBtn.title = "Play Music";
+        isPlaying = false;
+        playPauseBtn.classList.remove("playing");
+      }
+    });
+
+    randomizeBtn.addEventListener('click', () => {
+      const randomIndex = Math.floor(Math.random() * playlist.length);
+      playTrack(randomIndex);
+    });
+
+    // Set initial icons and show controls
+    playPauseIcon.className = "fa fa-play";
+    randomIcon.className = "fa fa-rotate-right";
+    controls.style.opacity = '1';
+  });
 }
 
 document.addEventListener('DOMContentLoaded', main);

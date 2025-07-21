@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Document</title>
+    <!-- Load FA only when needed using JS -->
+    <link id="fa-icons" rel="stylesheet" href="" disabled>
+
 </head>
 
 <body>
@@ -20,6 +23,14 @@
     <script src='https://unpkg.com/three@0.146.0/examples/js/postprocessing/UnrealBloomPass.js'></script>
     <script src='https://unpkg.com/three@0.146.0/examples/js/objects/Reflector.js'></script>
     <script src="main.js"></script>
+    <audio id="bg-music" preload="none" loop></audio>
+    <div id="track-info">Now Playing: None</div>
+
+
+    <div id="controls">
+         <button id="playPause" title="Play Music"><i class="icon fa"></i></button>
+         <button id="randomize" title="Randomize"><i class="icon fa"></i></button>
+    </div>
 </body>
 
 </html>
