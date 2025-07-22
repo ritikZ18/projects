@@ -1,3 +1,29 @@
+const loader = new THREE.GLTFLoader();
+let sonicModel;
+
+loader.load('assets/sonic-running.glb', (gltf) => {
+  sonicModel = gltf.scene;
+  sonicModel.scale.set(0.5, 0.5, 0.5);
+  sonicModel.position.set(0, 0, 0);
+
+  scene.add(sonicModel);
+
+  // Optional: if it has animations
+  const mixer = new THREE.AnimationMixer(sonicModel);
+  mixer.clipAction(gltf.animations[0]).play();
+
+  // Inside animate loop
+//   const clock = new THREE.Clock();
+//   function animate() {
+//     requestAnimationFrame(animate);
+//     mixer.update(clock.getDelta());
+//     renderer.render(scene, camera);
+//   }
+//   animate();
+});
+
+
+
 //===================================================== full screen
 var requestFullscreen = function (ele) {
     if (ele.requestFullscreen) {
@@ -166,7 +192,7 @@ scene.add(cubes);
 
 //===================================================== Loader
 //3d model from https://sketchfab.com/models/ab92d9b324724e18968377264d05774d
-var loader = new THREE.GLTFLoader();
+// var loader = new THREE.GLTFLoader();
 var model;
 loader.load(
     "https://raw.githubusercontent.com/baronwatts/models/master/sky-island.glb",
@@ -190,38 +216,25 @@ loader.load(
 //3d model from https://3dwarehouse.sketchup.com/user/0438052632930067253040161/wingedkoopa67?nav=models
 var clock = new THREE.Clock();
 var mixer = null;
-var firstObject;
-var loader = new THREE.GLTFLoader();
-loader.load(
-    "https://raw.githubusercontent.com/baronwatts/models/master/sonic.glb",
-    function (gltf) {
-        gltf.scene.traverse(function (node) {
-            if (node instanceof THREE.Mesh) {
-                node.castShadow = true;
-                node.material.side = THREE.DoubleSide;
-            }
-        });
+let sonicRunner, sonicMixer;
+// var loader = new THREE.GLTFLoader();
+// const sonicLoader = new THREE.GLTFLoader();
+loader.load("assets/sonic-running.glb", function (gltf) {
+    sonicRunner = gltf.scene;
+    sonicRunner.scale.set(0.65, 0.65, 0.65);
+    // sonicRunner.position.set(...); // Set initial position
+    scene.add(new THREE.AxesHelper(10)); // adds XYZ reference
+    sonicRunner.position.set(0, 0, 0); // Set initial position
 
-        firstObject = gltf.scene;
-        firstObject.scale.set(0.65, 0.65, 0.65);
-        group.add(firstObject);
-
-        console.log(gltf.animations); //shows all animations imported into the dopesheet in blender
-
-        mixer = new THREE.AnimationMixer(firstObject);
-        mixer.clipAction(gltf.animations[0]).play();
-
-        document.body.addEventListener("click", jump);
-        function jump() {
-            mixer.clipAction(gltf.animations[0]).stop();
-            mixer.clipAction(gltf.animations[1]).play();
-            setTimeout(function () {
-                mixer.clipAction(gltf.animations[1]).stop();
-                mixer.clipAction(gltf.animations[0]).play();
-            }, 900);
-        }
+    // Optional animation
+    sonicMixer = new THREE.AnimationMixer(sonicRunner);
+    if (gltf.animations.length) {
+        sonicMixer.clipAction(gltf.animations[0]).play();
     }
-);
+
+    scene.add(sonicRunner);
+});
+
 
 //===================================================== add model
 var size = 0.05;
@@ -402,9 +415,21 @@ function POV() {
     var p4 = carPath.getPointAt((percentage + 0.01 / 4) % 1);
 
     camera.lookAt(p2);
+    console.log('Sonic Position:', sonicRunner.position);
 
 
     group.position.set(p3.x, p3.y + 0.25, p3.z);
+    if (sonicRunner) {
+    // Get point and tangent for Sonic on the path
+    const sonicPoint = carPath.getPointAt(percentage % 1);
+    const sonicTangent = carPath.getTangentAt(percentage % 1);
+
+    sonicRunner.position.set(sonicPoint.x, sonicPoint.y + 2, sonicPoint.z);
+console.log(sonicRunner);
+
+    sonicRunner.lookAt(sonicPoint.clone().add(sonicTangent));
+}
+
     group.lookAt(p2);
     camera.position.x = p4.x + 2;
     camera.position.y = p4.y + 1;
@@ -417,6 +442,8 @@ function animate() {
     hit();
     var delta = clock.getDelta();
     if (mixer != null) mixer.update(delta);
+    if (sonicMixer) sonicMixer.update(delta);
+
 
     //VR
     if (VR) {
