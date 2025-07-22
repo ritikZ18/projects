@@ -1009,7 +1009,7 @@ function main() {
 
     // Playlist
     const playlist = [
-      'assets/song1.mp3'
+      'assets/sunflower.mp3'
     ];
 
     let currentTrack = 0;
