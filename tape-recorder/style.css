@@ -33,6 +33,31 @@ body {
   cursor: -webkit-grab;
   cursor: grab;
   background-color: #b7ecff;
+  
+}
+
+/* The Cinematic Dark State */
+body.is-playing {
+    background-color: #111b22; /* Very dark, deep blue-black */
+}
+
+/* Dim the environment shadows */
+.shadows {
+    transition: filter 3s ease-in-out;
+}
+
+body.is-playing .shadows {
+    filter: brightness(0.2) contrast(1.2); /* Darken the floor/shadows */
+}
+
+/* Optional: Make the Walkman 'pop' slightly in the dark */
+.main {
+    transition: filter 3s ease-in-out;
+}
+
+body.is-playing .main {
+    /* Subtle glow around the device */
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1)); 
 }
 
 .face {

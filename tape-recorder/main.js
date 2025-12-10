@@ -84,6 +84,23 @@ function getAudioCtx() {
   return audioCtx;
 }
 
+// Small noise burst for mechanical "clack"
+function createNoiseBurst(ctx, duration = 0.07) {
+  const sampleRate = ctx.sampleRate;
+  const buffer = ctx.createBuffer(1, sampleRate * duration, sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < data.length; i++) {
+    // white noise, a bit tamed
+    data[i] = (Math.random() * 2 - 1) * 0.6;
+  }
+
+  const src = ctx.createBufferSource();
+  src.buffer = buffer;
+  return src;
+}
+
+
 function playClickSound(type) {
   const ctx = getAudioCtx();
   const now = ctx.currentTime;
@@ -92,11 +109,13 @@ function playClickSound(type) {
     // Mechanical button press - two-tone click
     const osc1 = ctx.createOscillator();
     const osc2 = ctx.createOscillator();
+    const noise = createNoiseBurst(ctx, 0.06);
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
-    filter.type = "lowpass";
-    filter.frequency.value = 2000;
+   filter.type = "highpass";
+    filter.frequency.setValueAtTime(900, now);
+    filter.Q.value = 4;
 
     // First click (press down)
     osc1.type = "square";
@@ -365,8 +384,6 @@ audioElement.addEventListener("ended", handleTrackEnd);
 // ============================
 // INITIALIZE
 // ============================
-injectCinematicCSS();
-createCinematicElements();
 loadTrack(0);
 enterStoppedVisual(); // ensure visuals are clean on load
 
