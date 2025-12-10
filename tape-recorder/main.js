@@ -208,8 +208,6 @@ const tracks = [
   "./assets/mere_mehboob_qayamat.mp3",
   "./assets/mere_samne_wali_khidki.mp3",
 
-  // "https://example.com/track2.mp3",
-  // "https://example.com/track3.mp3",
 ];
 
 // shuffle once at startup so order is random
